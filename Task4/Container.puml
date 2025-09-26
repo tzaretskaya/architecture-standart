@@ -1,0 +1,38 @@
+@startuml
+title "Bank System" Context Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(client, "Client", "A client of the bank system")
+Person(callCentreEmployee, "Call Center employee", "")
+Person(partnerCallCentreEmployee, "Partner Call Center employee", "")
+Person(depositWorker, "Employee of the deposit back office", "A person managing the deposits")
+Person(creditWorker, "Employee of the credit back office", "A person managing the credits")
+
+System_Ext(partnerCallCentre, "Partner Call Center")
+
+Container_Boundary(BankSystem, "Bank System") {
+  Container(abs, "ABS", "Delphi", "The system where accounting and bookkeeping operations are performed")
+  Container(absDB, "ABS database", "Oracle", "Stores bank account and bookkeeping")
+  Container(ratesService, "Rates service", ".NET Framework 4.5", "Handles client interactions")
+  Container(ratesDB, "Rates database", "MSSQL", "Stores rates")
+  Container(ratesIntegrationService, "Rates integration service", ".NET Framework 4.5", "Sends new rates to call centres")
+  Container(callCentre, "Call Center")
+
+}
+
+Rel(abs, absDB, "Reads/writes bank accounts and bookkeeping")
+Rel(abs, ratesService, "Change rates")
+Rel(client, callCentre, "Calls for deposit rates details")
+Rel(client, partnerCallCentre, "Calls for deposit rates details")
+Rel(ratesIntegrationService,callCentre, "Notifies about deposits rates update")
+Rel(ratesIntegrationService,partnerCallCentre, "Notifies about deposits rates update")
+Rel(callCentreEmployee, callCentre, "Uses system for reading deposit rates")
+Rel(partnerCallCentreEmployee, partnerCallCentre, "Uses system for reading deposit rates")
+Rel(depositWorker, ratesService, "Works with deposits")
+Rel(creditWorker, ratesService, "Works with credits")
+Rel(ratesService, ratesDB, "Reads/writes rates")
+Rel(ratesService, ratesIntegrationService, "Initiates rates updates for partners")
+@enduml

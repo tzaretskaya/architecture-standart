@@ -1,0 +1,27 @@
+@startuml
+title "Bank System" Context Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(client, "Client", "A client of the bank system")
+Person(depositWorker, "Employee of the deposit back office", "A person managing the deposits")
+Person(creditWorker, "Employee of the credit back office", "A person managing the credits")
+Person(backOfficeManager, "Back office manager", "A person who process clients deposit requests")
+
+System(bank, "Bank System", "Bank for managing credits and debits")
+System_Ext(telecom, "Telecom operator")
+System_Ext(partnerCallCentre, "Partner Call Center")
+
+Rel(client, bank, "Watches deposits, creates deposit request, writes name and surname for a deposit request")
+Rel(depositWorker, bank, "Works with deposits")
+Rel(creditWorker, bank, "Works with credits")
+Rel(backOfficeManager, bank, "process clients deposit requests")
+Rel(bank,telecom,"Initiates sending sms")
+Rel(bank,partnerCallCentre,"Notifies about new client for a call")
+Rel(partnerCallCentre,bank,"Reads client request")
+Rel(client,partnerCallCentre,"Creates deposit request")
+Rel(telecom,client,"Sends sms")
+
+@enduml
