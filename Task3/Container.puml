@@ -1,0 +1,50 @@
+@startuml
+title BankSystem Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+
+Person(client, "Client", "A client of the bank system")
+Person(depositWorker, "Employee of the deposit back office", "A person managing the deposits")
+Person(creditWorker, "Employee of the credit back office", "A person managing the credits")
+Person(backOfficeManager, "Back office manager", "A person who process clients deposit requests")
+
+System_Ext(telecom, "Telecom operator")
+System_Ext(partnerCallCentre, "Partner Call Center")
+System(BankSystem, "Bank System", "System managing deposits")
+
+Container_Boundary(BankSystem, "Bank System") {
+  Container(abs, "ABS", "Delphi", "The system where accounting and bookkeeping operations are performed")
+  Container(absDB, "ABS database", "Oracle", "Stores bank account and bookkeeping")
+  Container(internetBank, "Internet Bank", ".NET Framework 4.5", "Handles client interactions")
+  Container(internetBankDB, "Internet Bank database", "MSSQL", "Stores deposits, clients data")
+  Container(site, "Site", "PHP, React.js", "Get deposits, create deposits")
+  Container(callCentre, "Call Centre", "React.js, Java Spring Boot, PostgreSQL", "Contractor system used for call centre")
+  Container(smsGateway, "SMS gateway of a telecom operator", "", "Interacts with the telecom operator")
+
+}
+
+Rel(client, internetBank, "Reads deposits, creates deposit requests, confirms the creation of the deposit")
+Rel(client, site, "Reads deposits, creates deposit requests (for offline processing)")
+Rel(client, callCentre, "Calls for deposit request")
+Rel(client, partnerCallCentre, "Calls for deposit request")
+Rel(callCentre, client, "Calls to back process deposit request with special data")
+Rel(callCentre, abs, "Sends client deposit request for processing")
+Rel(partnerCallCentre, abs, "Sends client deposit request for processing")
+Rel(internetBank, internetBankDB, "Reads/writes clients data, deposits data")
+Rel(site, internetBankDB, "Reads/writes clients data, deposits data")
+Rel(internetBank, abs, "Sends client deposit request for processing")
+Rel(abs, callCentre, "Notifies about a new client deposit request to process offline")
+Rel(abs, absDB, "Reads/writes bank accounts and bookkeeping")
+Rel(depositWorker, abs, "Works with deposits")
+Rel(backOfficeManager, abs, "Processes a request to open a deposit")
+Rel(creditWorker, abs, "Works with credits")
+Rel(abs, smsGateway, "Initiates sending sms")
+Rel(internetBank, smsGateway, "Initiates sending sms")
+Rel(smsGateway, telecom, "Initiates sending sms")
+Rel(telecom, client, "Sends sms")
+
+
+@enduml
